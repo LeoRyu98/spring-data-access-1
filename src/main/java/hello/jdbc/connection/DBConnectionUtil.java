@@ -11,6 +11,9 @@ import static hello.jdbc.connection.ConnectionConst.*;
 @Slf4j
 public class DBConnectionUtil {
 
+    /**
+     * JDBC 가 제공하는 DriverManager 는 라이브러리에 등록된 DB 드라이버들을 관리하고, 커넥션을 획득하는 기능을 제공
+     */
     public static Connection getConnection(){
         try {
             Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
