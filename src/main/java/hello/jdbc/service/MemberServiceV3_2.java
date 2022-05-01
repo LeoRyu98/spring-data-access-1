@@ -7,37 +7,38 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 트랜잭션 - 트랜잭션 매니저
+ * 트랜잭션 - 트랜잭션 템플릿
  */
 @Slf4j
-@RequiredArgsConstructor
-public class MemberServiceV3_1 {
+public class MemberServiceV3_2 {
 
-//    private final DataSource dataSource;
-    private final PlatformTransactionManager transactionManager;
+    // private final PlatformTransactionManager transactionManager;
+    private final TransactionTemplate txTemplate;
     private final MemberRepositoryV3 memberRepository;
+
+    public MemberServiceV3_2(PlatformTransactionManager transactionManager, MemberRepositoryV3 memberRepository) {
+        this.txTemplate = new TransactionTemplate(transactionManager);
+        this.memberRepository = memberRepository;
+    }
 
     /**
      * fromId 의 회원을 조회해서 toId 의 회원에게 money 만큼의 돈을 계좌이체 하는 트랜잭션 로직
      */
     public void accountTransfer(String fromId, String toId, int money) {
-        // 트랜잭션 시작
-        TransactionStatus status =
-                transactionManager.getTransaction(new DefaultTransactionDefinition());
-
-        try {
-            // 비지니스 로직 수행
-            bizLogic(fromId, toId, money);
-            transactionManager.commit(status); // 성공시 커밋
-        }catch (Exception e){
-            transactionManager.rollback(status); // 실패시 롤백
-            throw new IllegalStateException(e);
-        }
+        txTemplate.executeWithoutResult((status) -> {
+            try {
+                // 비지니스 로직
+                bizLogic(fromId, toId, money);
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }
+        });
     }
 
     /**
