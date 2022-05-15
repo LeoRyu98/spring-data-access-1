@@ -1,7 +1,7 @@
 # spring-data-access-1
 JDBC, DBCP, DataSource, Transaction, Spring Exception
 ## contents
-- JDBC 이해
+- Java DataBase Connetivity(JDBC) 이해
 - 커닉션풀(DBCP)과 데이터소스(DataSource) 이해
 - 데이터베이스 트랜잭션 이해
 - 스프링 문제 해결(@Transaction)
